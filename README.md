@@ -8,9 +8,9 @@ Visit our [demo page](https://olawod.github.io/FreeVC-demo) for audio samples.
 
 We also provide the [pretrained models](https://1drv.ms/u/s!AnvukVnlQ3ZTx1rjrOZ2abCwuBAh?e=UlhRR5).
 
-<table style="width:100%">
+<table style="width:100%; text-align:center;">
   <tr>
-    <td><img src="./resources/NeurlVC.png" alt="model framework" height="200"></td>
+    <td><img src="./resources/NeurlVC.png" alt="model framework" style="width:80%;"></td>
   </tr>
   <tr>
     <th>Model Framework</th>
