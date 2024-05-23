@@ -6,7 +6,7 @@ In this paper, we adopt the end-to-end [VITS](https://arxiv.org/abs/2106.06103) 
 
 Visit our [demo page](https://olawod.github.io/FreeVC-demo) for audio samples.
 
-We also provide the [pretrained models](https://1drv.ms/u/s!AnvukVnlQ3ZTx1rjrOZ2abCwuBAh?e=UlhRR5).
+We also provide the [pretrained models](https://1drv.ms/f/c/87587ec0bae9be5a/Ek_2ur6Uwr5Lq1g-C5-5FFUB5JkhHHhLPg9iQxKxFvHm0w?e=Zpcxec).
 
 <table style="width:100%; text-align:center;">
   <tr>
