@@ -10,7 +10,7 @@ We also provide the [pretrained models](https://1drv.ms/u/s!AnvukVnlQ3ZTx1rjrOZ2
 
 <table style="width:100%; text-align:center;">
   <tr>
-    <td style="text-align:center;"><img src="./resources/NeurlVC.png" alt="model framework" style="width:80%;"></td>
+    <td style="text-align:center;"><img src="./resources/NeurlVC.png" alt="model framework" style="width:100%;"></td>
   </tr>
   <tr>
     <th>Model Framework</th>
