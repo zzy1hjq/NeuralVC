@@ -30,7 +30,7 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
         self.use_spk = hparams.model.use_spk
         self.spec_len = hparams.train.max_speclen
 
-        random.seed(1234)
+        random.seed(1235)
         random.shuffle(self.audiopaths)
         self._filter()
 
@@ -50,8 +50,8 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
     def get_audio(self, filename):
         audio, sampling_rate = load_wav_to_torch(filename)
         if sampling_rate != self.sampling_rate:
-            raise ValueError("{} SR doesn't match target {} SR".format(
-                sampling_rate, self.sampling_rate))
+            raise ValueError("{} SR doesn't match target {} SR,the audio is{}".format(
+                sampling_rate, self.sampling_rate,filename))
         audio_norm = audio / self.max_wav_value
         audio_norm = audio_norm.unsqueeze(0)
         spec_filename = filename.replace(".wav", ".spec.pt")
@@ -65,55 +65,21 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
             torch.save(spec, spec_filename)
             
         if self.use_spk:
-            spk_filename = filename.replace(".wav", ".npy")
+            spk_filename = filename.replace(".wav", ".npy").replace("vctk-mini-16k", "spk")
             spk = torch.from_numpy(np.load(spk_filename))
         
-        if not self.use_sr:
-            c_filename = filename.replace(".wav", ".pt")
-            c = torch.load(c_filename).squeeze(0)
-        else:
-            i = random.randint(68,92)
-            '''
-            basename = os.path.basename(filename)[:-4]
-            spkname = basename[:4]
-            #print(basename, spkname)
-            with h5py.File(f"dataset/rs/wavlm/{spkname}/{i}.hdf5","r") as f:
-                c = torch.from_numpy(f[basename][()]).squeeze(0)
-            #print(c)
-            '''
-            c_filename = filename.replace(".wav", f"_{i}.pt")
-            c_filename = c_filename.replace("vctk-16k", "dataset/sr/wavlm")
-            c = torch.load(c_filename).squeeze(0)
-            
-        # 2023.01.10 update: code below can deteriorate model performance
-        # I added these code during cleaning up, thinking that it can offer better performance than my provided checkpoints, but actually it does the opposite.
-        # What an act of 'adding legs to a snake'!
-        '''
-        lmin = min(c.size(-1), spec.size(-1))
-        spec, c = spec[:, :lmin], c[:, :lmin]
-        audio_norm = audio_norm[:, :lmin*self.hop_length]
-        _spec, _c, _audio_norm = spec, c, audio_norm
-        while spec.size(-1) < self.spec_len:
-            spec = torch.cat((spec, _spec), -1)
-            c = torch.cat((c, _c), -1)
-            audio_norm = torch.cat((audio_norm, _audio_norm), -1)
-        start = random.randint(0, spec.size(-1) - self.spec_len)
-        end = start + self.spec_len
-        spec = spec[:, start:end]
-        c = c[:, start:end]
-        audio_norm = audio_norm[:, start*self.hop_length:end*self.hop_length]
-        '''
+        c_filename = filename.replace(".wav", ".pt")
+        c=torch.load(c_filename)
+        c=c.transpose(1,0).squeeze(1)
         
-        if self.use_spk:
-            return c, spec, audio_norm, spk
-        else:
-            return c, spec, audio_norm
+        return c, spec, audio_norm, spk
 
     def __getitem__(self, index):
         return self.get_audio(self.audiopaths[index][0])
 
     def __len__(self):
         return len(self.audiopaths)
+
 
 
 class TextAudioSpeakerCollate():
@@ -135,6 +101,7 @@ class TextAudioSpeakerCollate():
             torch.LongTensor([x[0].size(1) for x in batch]),
             dim=0, descending=True)
 
+        max_c_len = max([x[0].size(1) for x in batch])
         max_spec_len = max([x[1].size(1) for x in batch])
         max_wav_len = max([x[2].size(1) for x in batch])
 
@@ -145,7 +112,7 @@ class TextAudioSpeakerCollate():
         else:
             spks = None
         
-        c_padded = torch.FloatTensor(len(batch), batch[0][0].size(0), max_spec_len)
+        c_padded = torch.FloatTensor(len(batch), batch[0][0].size(0), max_c_len)
         spec_padded = torch.FloatTensor(len(batch), batch[0][1].size(0), max_spec_len)
         wav_padded = torch.FloatTensor(len(batch), 1, max_wav_len)
         c_padded.zero_()
@@ -184,6 +151,7 @@ class TextAudioSpeakerCollate():
           return c_padded, spec_padded, wav_padded, spks
         else:
           return c_padded, spec_padded, wav_padded
+
 
 
 class DistributedBucketSampler(torch.utils.data.distributed.DistributedSampler):
