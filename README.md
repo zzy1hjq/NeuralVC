@@ -4,7 +4,6 @@
 In this paper, we adopt the end-to-end [VITS](https://arxiv.org/abs/2106.06103) framework for high-quality waveform reconstruction. By introducing HuBERT-Soft, we extract clean speech content information, and by incorporating a pre-trained speaker encoder, we extract speaker characteristics from the speech. Inspired by the structure of [speech compression models](https://arxiv.org/abs/2210.13438), we propose a **neural decoder** that synthesizes converted speech with the target speaker's voice by adding preprocessing and conditioning networks to receive and interpret speaker information. Additionally, we significantly improve the model's inference speed, achieving real-time voice conversion.
 
 
-Visit our [demo page](https://olawod.github.io/FreeVC-demo) for audio samples.
 
 We also provide the [pretrained models](https://1drv.ms/f/c/87587ec0bae9be5a/Ek_2ur6Uwr5Lq1g-C5-5FFUB5JkhHHhLPg9iQxKxFvHm0w?e=Zpcxec).
 
